@@ -68,7 +68,9 @@ export default function ImageGrid({ refreshTrigger = 0 }: ImageGridProps) {
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <div className="text-red-500">Error: {error}</div>
+        <div className="text-red-700" role="alert">
+          {error}
+        </div>
       </div>
     );
   }
@@ -112,9 +114,13 @@ export default function ImageGrid({ refreshTrigger = 0 }: ImageGridProps) {
                 <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
               </div>
               <div className="p-4">
-                <p className="text-gray-800 font-medium truncate">{image.description}</p>
-                <p className="text-sm text-gray-500">By {image.uploaded_by}</p>
-                <p className="text-xs text-gray-400">
+                <p className="text-gray-900 font-medium truncate">
+                  {image.description}
+                </p>
+                <p className="text-sm text-gray-700">
+                  By {image.uploaded_by}
+                </p>
+                <p className="text-xs text-gray-600">
                   {new Date(image.created_at).toLocaleDateString()}
                 </p>
               </div>
