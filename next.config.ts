@@ -20,7 +20,7 @@ const nextConfig = {
             key: 'Access-Control-Allow-Origin',
             value: process.env.NODE_ENV === 'development' 
               ? 'http://localhost:3000' 
-              : 'https://wkuhfuofhpjuwilhhtnj.supabase.co',
+              : 'https://insta-gallery-sz.vercel.app, https://wkuhfuofhpjuwilhhtnj.supabase.co',
           },
           {
             key: 'Access-Control-Allow-Methods',
