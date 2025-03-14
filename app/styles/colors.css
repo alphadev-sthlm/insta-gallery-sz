@@ -1,0 +1,87 @@
+:root {
+  /* Light mode colors */
+  --background-primary: #ffffff;
+  --background-secondary: #f3f4f6;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --border-color: #e5e7eb;
+  --accent-primary: #2563eb;
+  --accent-primary-hover: #1d4ed8;
+  --accent-secondary: #e5e7eb;
+  --accent-secondary-hover: #d1d5db;
+  --error: #ef4444;
+  --success: #22c55e;
+  --modal-overlay: rgba(107, 114, 128, 0.75);
+}
+
+/* Dark mode colors */
+.dark {
+  --background-primary: #1f2937;
+  --background-secondary: #111827;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --border-color: #374151;
+  --accent-primary: #3b82f6;
+  --accent-primary-hover: #2563eb;
+  --accent-secondary: #4b5563;
+  --accent-secondary-hover: #374151;
+  --error: #f87171;
+  --success: #4ade80;
+  --modal-overlay: rgba(0, 0, 0, 0.75);
+}
+
+/* Background colors */
+.bg-primary {
+  background-color: var(--background-primary);
+}
+
+.bg-secondary {
+  background-color: var(--background-secondary);
+}
+
+/* Text colors */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+/* Border colors */
+.border-color {
+  border-color: var(--border-color);
+}
+
+/* Accent colors */
+.accent-primary {
+  background-color: var(--accent-primary);
+  color: white;
+}
+
+.accent-primary:hover {
+  background-color: var(--accent-primary-hover);
+}
+
+.accent-secondary {
+  background-color: var(--accent-secondary);
+  color: var(--text-primary);
+}
+
+.accent-secondary:hover {
+  background-color: var(--accent-secondary-hover);
+}
+
+/* Status colors */
+.text-error {
+  color: var(--error);
+}
+
+.text-success {
+  color: var(--success);
+}
+
+/* Modal overlay */
+.modal-overlay {
+  background-color: var(--modal-overlay);
+} 

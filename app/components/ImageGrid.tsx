@@ -82,7 +82,7 @@ export default function ImageGrid({ refreshTrigger = 0 }: ImageGridProps) {
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <div className="text-red-700" role="alert">
+        <div className="text-error" role="alert">
           {error}
         </div>
       </div>
@@ -96,7 +96,7 @@ export default function ImageGrid({ refreshTrigger = 0 }: ImageGridProps) {
           <div
             key={image.id}
             ref={index === images.length - 1 ? lastImageRef : null}
-            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer group"
+            className="bg-primary rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer group"
             onClick={() => setSelectedImage(image)}
           >
             <div className="relative aspect-square">
@@ -113,13 +113,13 @@ export default function ImageGrid({ refreshTrigger = 0 }: ImageGridProps) {
               <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
             </div>
             <div className="p-4">
-              <p className="text-gray-900 font-medium truncate">
+              <p className="text-primary font-medium truncate">
                 {image.description}
               </p>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-secondary">
                 By {image.uploaded_by}
               </p>
-              <p className="text-xs text-gray-600">
+              <p className="text-xs text-secondary">
                 {new Date(image.created_at).toLocaleDateString()}
               </p>
             </div>
@@ -131,13 +131,13 @@ export default function ImageGrid({ refreshTrigger = 0 }: ImageGridProps) {
           Array.from({ length: 3 }).map((_, index) => (
             <div
               key={`skeleton-${index}`}
-              className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse"
+              className="bg-primary rounded-lg shadow-md overflow-hidden animate-pulse"
             >
-              <div className="relative aspect-square bg-gray-200" />
+              <div className="relative aspect-square bg-accent-secondary" />
               <div className="p-4 space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-3/4" />
-                <div className="h-3 bg-gray-200 rounded w-1/2" />
-                <div className="h-3 bg-gray-200 rounded w-1/4" />
+                <div className="h-4 bg-accent-secondary rounded w-3/4" />
+                <div className="h-3 bg-accent-secondary rounded w-1/2" />
+                <div className="h-3 bg-accent-secondary rounded w-1/4" />
               </div>
             </div>
           ))
