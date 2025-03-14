@@ -29,8 +29,8 @@ export default function Header({ onUploadClick }: HeaderProps) {
               </svg>
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-xl font-bold text-primary ">InstaGallery</h1>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Share your moments</p>
+              <h1 className="text-xl font-bold text-primary ">AlphaSnaps</h1>
+              <p className="text-xs text-gray-600 dark:text-gray-400">Where Code Meets Capture</p>
             </div>
           </div>
 
