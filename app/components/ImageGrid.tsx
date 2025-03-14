@@ -19,7 +19,11 @@ interface ApiResponse {
   pagination: PaginationData;
 }
 
-export default function ImageGrid() {
+interface ImageGridProps {
+  refreshTrigger?: number;
+}
+
+export default function ImageGrid({ refreshTrigger = 0 }: ImageGridProps) {
   const [images, setImages] = useState<ImageType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +56,7 @@ export default function ImageGrid() {
 
   useEffect(() => {
     fetchImages(pagination.current_page);
-  }, [pagination.current_page]);
+  }, [pagination.current_page, refreshTrigger]);
 
   const handlePageChange = (page: number) => {
     console.log(page);
