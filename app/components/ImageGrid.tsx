@@ -29,8 +29,14 @@ export default function ImageGrid({ refreshTrigger = 0 }: ImageGridProps) {
   const [selectedImage, setSelectedImage] = useState<ImageType | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const loadingRef = useRef(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
+
+  const handleImageLoad = (imageId: string) => {
+    setLoadedImages(prev => new Set(prev).add(imageId));
+  };
+
   const lastImageRef = useCallback((node: HTMLDivElement | null) => {
     if (loading || !hasMore) return;
     
@@ -68,6 +74,7 @@ export default function ImageGrid({ refreshTrigger = 0 }: ImageGridProps) {
 
   useEffect(() => {
     setImages([]);
+    setLoadedImages(new Set());
     setCurrentPage(1);
     setHasMore(true);
     fetchImages(1, true);
@@ -82,7 +89,7 @@ export default function ImageGrid({ refreshTrigger = 0 }: ImageGridProps) {
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <div className="text-error" role="alert">
+        <div className="text-red-700" role="alert">
           {error}
         </div>
       </div>
@@ -104,11 +111,16 @@ export default function ImageGrid({ refreshTrigger = 0 }: ImageGridProps) {
                 src={image.gallery_url}
                 alt={image.description}
                 fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                className={`object-cover transition-all duration-500 ${
+                  loadedImages.has(image.id)
+                    ? 'opacity-100 scale-100'
+                    : 'opacity-0 scale-105'
+                }`}
                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 quality={85}
                 priority={index < 6}
                 loading={index < 6 ? 'eager' : 'lazy'}
+                onLoad={() => handleImageLoad(image.id)}
               />
               <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
             </div>
@@ -131,13 +143,13 @@ export default function ImageGrid({ refreshTrigger = 0 }: ImageGridProps) {
           Array.from({ length: 3 }).map((_, index) => (
             <div
               key={`skeleton-${index}`}
-              className="bg-primary rounded-lg shadow-md overflow-hidden animate-pulse"
+              className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse"
             >
-              <div className="relative aspect-square bg-accent-secondary" />
+              <div className="relative aspect-square bg-gray-200" />
               <div className="p-4 space-y-2">
-                <div className="h-4 bg-accent-secondary rounded w-3/4" />
-                <div className="h-3 bg-accent-secondary rounded w-1/2" />
-                <div className="h-3 bg-accent-secondary rounded w-1/4" />
+                <div className="h-4 bg-gray-200 rounded w-3/4" />
+                <div className="h-3 bg-gray-200 rounded w-1/2" />
+                <div className="h-3 bg-gray-200 rounded w-1/4" />
               </div>
             </div>
           ))
