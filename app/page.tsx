@@ -19,7 +19,7 @@ export default function Home() {
     <>
       <Header onUploadClick={() => setIsUploadModalOpen(true)} />
       
-      <main className="container mx-auto px-4 py-8 bg-secondary min-h-screen">
+      <main className="container mx-auto px-4 mt-20 pb-8 min-h-screen bg-secondary">
         <ImageGrid refreshTrigger={refreshTrigger} />
 
         <Modal
