@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, ReactNode } from 'react';
 import type { Image as ImageType } from '../types/image';
 import Image from 'next/image';
 import FullscreenImage from './FullscreenImage';
+import Advertisement from './Advertisement';
 
 interface PaginationData {
   current_page: number;
@@ -86,6 +87,63 @@ export default function ImageGrid({ refreshTrigger = 0 }: ImageGridProps) {
     }
   }, [currentPage]);
 
+  const renderGridItems = (): ReactNode[] => {
+    const items: ReactNode[] = [];
+    let adCounter = 0;
+
+    images.forEach((image, index) => {
+      // Add the image
+      items.push(
+        <div
+          key={image.id}
+          ref={index === images.length - 1 ? lastImageRef : null}
+          className="bg-primary rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer group"
+          onClick={() => setSelectedImage(image)}
+        >
+          <div className="relative aspect-square">
+            <Image
+              src={image.gallery_url}
+              alt={image.description}
+              fill
+              className={`object-cover transition-all duration-500 ${
+                loadedImages.has(image.id)
+                  ? 'opacity-100 scale-100'
+                  : 'opacity-0 scale-105'
+              }`}
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              quality={85}
+              priority={index < 6}
+              loading={index < 6 ? 'eager' : 'lazy'}
+              onLoad={() => handleImageLoad(image.id)}
+            />
+            <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+          </div>
+          <div className="p-4">
+            <p className="text-primary font-medium truncate">
+              {image.description}
+            </p>
+            <p className="text-sm text-secondary">
+              By {image.uploaded_by}
+            </p>
+            <p className="text-xs text-secondary">
+              {new Date(image.created_at).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
+      );
+
+      // Add advertisement after every 5th image
+      if ((index + 1) % 5 === 0 && index !== images.length - 1) {
+        items.push(
+          <Advertisement key={`ad-${adCounter}`} />
+        );
+        adCounter++;
+      }
+    });
+
+    return items;
+  };
+
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
@@ -99,57 +157,20 @@ export default function ImageGrid({ refreshTrigger = 0 }: ImageGridProps) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 min-h-[400px]">
-        {images.map((image, index) => (
-          <div
-            key={image.id}
-            ref={index === images.length - 1 ? lastImageRef : null}
-            className="bg-primary rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer group"
-            onClick={() => setSelectedImage(image)}
-          >
-            <div className="relative aspect-square">
-              <Image
-                src={image.gallery_url}
-                alt={image.description}
-                fill
-                className={`object-cover transition-all duration-500 ${
-                  loadedImages.has(image.id)
-                    ? 'opacity-100 scale-100'
-                    : 'opacity-0 scale-105'
-                }`}
-                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                quality={85}
-                priority={index < 6}
-                loading={index < 6 ? 'eager' : 'lazy'}
-                onLoad={() => handleImageLoad(image.id)}
-              />
-              <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
-            </div>
-            <div className="p-4">
-              <p className="text-primary font-medium truncate">
-                {image.description}
-              </p>
-              <p className="text-sm text-secondary">
-                By {image.uploaded_by}
-              </p>
-              <p className="text-xs text-secondary">
-                {new Date(image.created_at).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-        ))}
+        {renderGridItems()}
         
         {loading && (
           // Loading skeletons
           Array.from({ length: 3 }).map((_, index) => (
             <div
               key={`skeleton-${index}`}
-              className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse"
+              className="bg-primary rounded-lg shadow-md overflow-hidden animate-pulse"
             >
-              <div className="relative aspect-square bg-gray-200" />
+              <div className="relative aspect-square bg-accent-secondary" />
               <div className="p-4 space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-3/4" />
-                <div className="h-3 bg-gray-200 rounded w-1/2" />
-                <div className="h-3 bg-gray-200 rounded w-1/4" />
+                <div className="h-4 bg-accent-secondary rounded w-3/4" />
+                <div className="h-3 bg-accent-secondary rounded w-1/2" />
+                <div className="h-3 bg-accent-secondary rounded w-1/4" />
               </div>
             </div>
           ))
