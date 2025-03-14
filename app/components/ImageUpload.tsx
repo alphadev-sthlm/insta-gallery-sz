@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 interface UploadResponse {
   id: string;
@@ -21,6 +21,59 @@ export default function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [isCameraMode, setIsCameraMode] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  useEffect(() => {
+    if (isCameraMode) {
+      startCamera();
+    } else {
+      stopCamera();
+    }
+    return () => stopCamera();
+  }, [isCameraMode]);
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+      streamRef.current = stream;
+    } catch (err) {
+      setError('Failed to access camera. Please make sure you have granted camera permissions.');
+      setIsCameraMode(false);
+    }
+  };
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  };
+
+  const captureImage = () => {
+    if (!videoRef.current) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    canvas.getContext('2d')?.drawImage(videoRef.current, 0, 0);
+
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
+        setFile(file);
+        setPreview(canvas.toDataURL('image/jpeg'));
+        setIsCameraMode(false);
+      }
+    }, 'image/jpeg');
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -37,7 +90,7 @@ export default function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) {
-      setError('Please select a file');
+      setError('Please select a file or capture an image');
       return;
     }
 
@@ -86,28 +139,59 @@ export default function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-6 bg-white rounded-lg shadow-md">
       <div className="space-y-2">
-        <label htmlFor="file" className="block text-sm font-medium text-gray-700">
-          Image
-        </label>
-        <div className="flex items-center space-x-4">
-          <input
-            type="file"
-            id="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="block w-full text-sm text-gray-500
-              file:mr-4 file:py-2 file:px-4
-              file:rounded-full file:border-0
-              file:text-sm file:font-semibold
-              file:bg-blue-50 file:text-blue-700
-              hover:file:bg-blue-100"
-          />
-          {file && (
-            <span className="text-sm text-gray-500">
-              {file.name}
-            </span>
-          )}
+        <div className="flex justify-between items-center">
+          <label htmlFor="file" className="block text-sm font-medium text-gray-700">
+            Image
+          </label>
+          <button
+            type="button"
+            onClick={() => setIsCameraMode(!isCameraMode)}
+            className="text-sm text-blue-600 hover:text-blue-800"
+          >
+            {isCameraMode ? 'Switch to File Upload' : 'Use Camera'}
+          </button>
         </div>
+
+        {isCameraMode ? (
+          <div className="space-y-4">
+            <div className="relative aspect-square w-full max-w-md mx-auto">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                className="w-full h-full object-cover rounded-lg"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={captureImage}
+              className="w-full py-2 px-4 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            >
+              Capture Photo
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center space-x-4">
+            <input
+              type="file"
+              id="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="block w-full text-sm text-gray-500
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-full file:border-0
+                file:text-sm file:font-semibold
+                file:bg-blue-50 file:text-blue-700
+                hover:file:bg-blue-100"
+            />
+            {file && (
+              <span className="text-sm text-gray-500">
+                {file.name}
+              </span>
+            )}
+          </div>
+        )}
+
         {preview && (
           <div className="mt-2 relative aspect-square w-32">
             <img
